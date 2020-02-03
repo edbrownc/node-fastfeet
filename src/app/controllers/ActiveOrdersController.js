@@ -54,13 +54,18 @@ class ActiveOrdersController {
     const schema = Yup.object().shape({
       start_date: Yup.date(),
       end_date: Yup.date(),
+      signature_id: Yup.number(),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const { start_date: start_date_req, end_date: end_date_req } = req.body;
+    const {
+      start_date: start_date_req,
+      end_date: end_date_req,
+      signature_id,
+    } = req.body;
 
     if (start_date_req) {
       if (isWithinBusinessHours(start_date_req)) {
@@ -93,6 +98,7 @@ class ActiveOrdersController {
     const { start_date, end_date } = await order.update({
       start_date: start_date_req,
       end_date: end_date_req,
+      signature_id,
     });
 
     return res.json({

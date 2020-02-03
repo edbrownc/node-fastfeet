@@ -1,0 +1,11 @@
+<strong>Product</strong></br>
+<small>{{ product }}</small> </br>
+</br>
+
+<strong>Delivery Address</strong></br>
+<small>{{ recName }}</small> </br>
+<small>{{ recNumber }}, {{ recStreet}}</small></br>
+{{#if recComplement}}
+  <small>{{ recComplement }}</small></br>
+{{/if}}
+<small>{{ recCity}}, {{ recState}} - {{ recZip}}</small></br>

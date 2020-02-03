@@ -1,6 +1,8 @@
 import { Router } from 'express';
+
 import multer from 'multer';
 import multerConfig from './config/multer';
+
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import RecipientController from './app/controllers/RecipientController';
@@ -9,6 +11,7 @@ import CourierController from './app/controllers/CourierController';
 import OrderController from './app/controllers/OrderController';
 import ActiveOrdersController from './app/controllers/ActiveOrdersController';
 import DeliveredOrdersController from './app/controllers/DeliveredOrdersController';
+import DeliveryProblemsController from './app/controllers/DeliveryProblemsController';
 
 import authMiddleware from './app/middlewares/auth';
 import authAdminMiddleware from './app/middlewares/authAdmin';
@@ -32,6 +35,10 @@ routes.put(
 );
 
 routes.get('/couriers/:id/deliveredorders', DeliveredOrdersController.index);
+
+routes.get('/orders/:id/problems', DeliveryProblemsController.index);
+routes.post('/orders/:id/problems', DeliveryProblemsController.store);
+routes.delete('/orders/:id/cancel-delivery', DeliveryProblemsController.delete);
 
 // Admin authenticated routes
 routes.use(authAdminMiddleware);
