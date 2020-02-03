@@ -1,9 +1,11 @@
 import * as Yup from 'yup';
-import { parseISO, isBefore, isAfter } from 'date-fns';
 import Order from '../models/Order';
 import Courier from '../models/Courier';
 import Recipient from '../models/Recipient';
 import File from '../models/File';
+import NewOrderMail from '../jobs/NewOrderMail';
+import Queue from '../../lib/Queue';
+import isWithinBusinessHours from '../utils/WithinBusinessHours';
 
 class OrderController {
   async index(req, res) {
@@ -13,8 +15,8 @@ class OrderController {
 
     const orders = await Order.findAll({
       where: { courier_id, canceled_at: null },
-      order: ['date'],
-      attributes: ['id', 'date', 'past', 'canpickup'],
+      order: ['start_date'],
+      attributes: ['id', 'product', 'start_date', 'end_date'],
       limit: 20,
       offset: (page - 1) * 20,
       include: [
@@ -52,6 +54,7 @@ class OrderController {
   async store(req, res) {
     const schema = Yup.object().shape({
       recipient_id: Yup.number().required(),
+      courier_id: Yup.number().required(),
       product: Yup.string().required(),
     });
 
@@ -59,12 +62,19 @@ class OrderController {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const { recipient_id, product } = req.body;
+    const { recipient_id, courier_id, product } = req.body;
 
     const order = await Order.create({
       recipient_id,
+      courier_id,
       product,
     });
+
+    const courier = await Courier.findByPk(courier_id);
+
+    const recipient = await Recipient.findByPk(recipient_id);
+
+    await Queue.add(NewOrderMail.key, { order, courier, recipient });
 
     return res.json({ order });
   }
@@ -72,8 +82,8 @@ class OrderController {
   async update(req, res) {
     const schema = Yup.object().shape({
       recipient_id: Yup.number(),
-      product: Yup.string(),
       courier_id: Yup.number(),
+      product: Yup.string(),
       canceled_at: Yup.date(),
       start_date: Yup.date(),
       end_date: Yup.date(),
@@ -83,28 +93,62 @@ class OrderController {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const { start_date } = req.body;
+    const start_date_req = req.body.start_date;
 
-    if (start_date) {
-      const parsedStartDate = parseISO(start_date);
-
-      const busHoursStart = parsedStartDate.setHours(8); // 08:00 for the same day as start date
-      const busHoursEnd = parsedStartDate.setHours(18); // 18:00 for the same day as start date
-
-      // If start date is outside of business hours
-      if (
-        isBefore(parsedStartDate, busHoursStart) ||
-        isAfter(parsedStartDate, busHoursEnd)
-      ) {
-        return res
-          .status(400)
-          .json({ error: 'Start date outside business hours.' });
-      }
+    if (start_date_req && isWithinBusinessHours) {
+      return res
+        .status(400)
+        .json({ error: 'Start date outside business hours.' });
     }
 
-    const order = await Order.update(req.body, {
-      where: { id: req.params.id },
+    const order = await Order.findByPk(req.params.id);
+
+    const {
+      id,
+      courier_id,
+      recipient_id,
+      product,
+      start_date,
+      end_date,
+    } = await order.update(req.body);
+
+    return res.json({
+      id,
+      courier_id,
+      recipient_id,
+      product,
+      start_date,
+      end_date,
     });
+  }
+
+  async delete(req, res) {
+    const order = await Order.findByPk(req.params.id, {
+      include: [
+        {
+          model: Recipient,
+          as: 'recipient',
+          attributes: [
+            'name',
+            'street',
+            'number',
+            'complement',
+            'state',
+            'city',
+            'zip',
+          ],
+        },
+        {
+          model: Courier,
+          as: 'courier',
+          attributes: ['name', 'email'],
+        },
+      ],
+    });
+
+    order.canceled_at = new Date();
+
+    await order.save();
 
     return res.json(order);
   }

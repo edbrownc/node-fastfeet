@@ -1,0 +1,20 @@
+<strong>Hello {{ courierName }},</strong>
+<p><small>You have a new delivery order:</small></p>
+<p>
+  <strong>Product</strong></br>
+  <small>{{ product }}</small> </br>
+  </br>
+
+  <strong>Delivery Address</strong></br>
+  <small>{{ recName }}</small> </br>
+  <small>{{ recNumber }}, {{ recStreet}}</small></br>
+  {{#if recComplement}}
+    <small>{{ recComplement }}</small></br>
+  {{/if}}
+  <small>{{ recCity}}, {{ recState}} - {{ recZip}}</small></br>
+
+  </br>
+  <small>
+    Package is ready for pickup.
+  </small>
+</p>

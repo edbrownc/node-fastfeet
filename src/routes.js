@@ -6,6 +6,9 @@ import SessionController from './app/controllers/SessionController';
 import RecipientController from './app/controllers/RecipientController';
 import FileController from './app/controllers/FileController';
 import CourierController from './app/controllers/CourierController';
+import OrderController from './app/controllers/OrderController';
+import ActiveOrdersController from './app/controllers/ActiveOrdersController';
+import DeliveredOrdersController from './app/controllers/DeliveredOrdersController';
 
 import authMiddleware from './app/middlewares/auth';
 import authAdminMiddleware from './app/middlewares/authAdmin';
@@ -22,6 +25,14 @@ routes.use(authMiddleware);
 
 routes.put('/users', UserController.update);
 
+routes.get('/couriers/:id/activeorders', ActiveOrdersController.index);
+routes.put(
+  '/couriers/:courierId/activeorders/:orderId',
+  ActiveOrdersController.update
+);
+
+routes.get('/couriers/:id/deliveredorders', DeliveredOrdersController.index);
+
 // Admin authenticated routes
 routes.use(authAdminMiddleware);
 routes.post('/recipients', RecipientController.store);
@@ -30,6 +41,11 @@ routes.get('/couriers', CourierController.index);
 routes.post('/couriers', CourierController.store);
 routes.put('/couriers/:id', CourierController.update);
 routes.delete('/couriers/:id', CourierController.delete);
+
+routes.get('/orders', OrderController.index);
+routes.post('/orders', OrderController.store);
+routes.put('/orders/:id', OrderController.update);
+routes.delete('/orders/:id', OrderController.delete);
 
 routes.post('/files', upload.single('file'), FileController.store);
 
