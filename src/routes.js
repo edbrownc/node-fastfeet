@@ -42,6 +42,7 @@ routes.delete('/orders/:id/cancel-delivery', DeliveryProblemsController.delete);
 
 // Admin authenticated routes
 routes.use(authAdminMiddleware);
+routes.get('/recipients', RecipientController.index);
 routes.post('/recipients', RecipientController.store);
 
 routes.get('/couriers', CourierController.index);

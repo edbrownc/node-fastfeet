@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 import Order from '../models/Order';
 import Courier from '../models/Courier';
 import Recipient from '../models/Recipient';
@@ -9,14 +10,15 @@ import isWithinBusinessHours from '../utils/WithinBusinessHours';
 
 class OrderController {
   async index(req, res) {
-    const { page = 1 } = req.query;
-
-    const { courier_id } = req.body;
+    const { page = 1, product } = req.query;
 
     const orders = await Order.findAll({
-      where: { courier_id, canceled_at: null },
-      order: ['start_date'],
-      attributes: ['id', 'product', 'start_date', 'end_date'],
+      where: {
+        canceled_at: null,
+        product: product ? { [Op.iLike]: `%${product}%` } : { [Op.like]: '%' },
+      },
+      order: ['id'],
+      attributes: ['id', 'product', 'start_date', 'end_date', 'status'],
       limit: 20,
       offset: (page - 1) * 20,
       include: [

@@ -8,6 +8,24 @@ class Order extends Model {
         canceled_at: Sequelize.DATE,
         start_date: Sequelize.DATE,
         end_date: Sequelize.DATE,
+        status: {
+          type: Sequelize.VIRTUAL,
+          get() {
+            if (this.get('canceled_at')) {
+              return 'Canceled';
+            }
+
+            if (this.get('end_date')) {
+              return 'Delivered';
+            }
+
+            if (this.get('end_date')) {
+              return 'Picked up';
+            }
+
+            return 'Pending';
+          },
+        },
       },
       { sequelize }
     );

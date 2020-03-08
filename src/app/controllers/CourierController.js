@@ -1,10 +1,16 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 import Courier from '../models/Courier';
 import File from '../models/File';
 
 class CourierController {
   async index(req, res) {
+    const { name } = req.query;
+
     const couriers = await Courier.findAll({
+      where: {
+        name: name ? { [Op.iLike]: `%${name}%` } : { [Op.like]: '%' },
+      },
       attributes: ['id', 'name', 'email', 'avatar_id'],
       include: [
         {
