@@ -38,6 +38,7 @@ class OrderController {
           model: Recipient,
           as: 'recipient',
           attributes: [
+            'id',
             'name',
             'street',
             'number',
