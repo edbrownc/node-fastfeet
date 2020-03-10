@@ -47,6 +47,7 @@ class OrderController {
             'zip',
           ],
         },
+        { model: File, as: 'signature', attributes: ['id', 'path', 'url'] },
       ],
     });
 
@@ -97,7 +98,7 @@ class OrderController {
 
     const start_date_req = req.body.start_date;
 
-    if (start_date_req && isWithinBusinessHours) {
+    if (start_date_req && isWithinBusinessHours(start_date_req)) {
       return res
         .status(400)
         .json({ error: 'Start date outside business hours.' });
