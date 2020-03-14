@@ -8,6 +8,12 @@ import Queue from '../../lib/Queue';
 
 class DeliveryProblemsController {
   async index(req, res) {
+    const problem = await DeliveryProblem.find();
+
+    return res.json(problem);
+  }
+
+  async show(req, res) {
     const order = await DeliveryProblem.find({
       orderId: req.params.id,
     });

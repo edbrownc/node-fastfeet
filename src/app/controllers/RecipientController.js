@@ -51,6 +51,50 @@ class RecipientController {
 
     return res.json(recipient);
   }
+
+  async update(req, res) {
+    const schema = Yup.object().shape({
+      name: Yup.string(),
+      street: Yup.string(),
+      number: Yup.string(),
+      complement: Yup.string().nullable(),
+      state: Yup.string(),
+      city: Yup.string(),
+      zip: Yup.string(),
+    });
+
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Validation fails' });
+    }
+
+    const recipient = await Recipient.findByPk(req.params.id);
+
+    const { email } = req.body;
+
+    if (email && email !== recipient.email) {
+      const emailExists = await Recipient.findOne({ where: { email } });
+
+      if (emailExists) {
+        return res.status(400).json({ error: 'Email already in use.' });
+      }
+    }
+
+    const { id, name } = await recipient.update(req.body, {
+      attributes: ['id', 'name'],
+    });
+
+    return res.json({ id, name });
+  }
+
+  async delete(req, res) {
+    await Recipient.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    return res.json({ message: 'Recipient deleted successfuly.' });
+  }
 }
 
 export default new RecipientController();

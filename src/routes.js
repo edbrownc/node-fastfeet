@@ -36,7 +36,8 @@ routes.put(
 
 routes.get('/couriers/:id/deliveredorders', DeliveredOrdersController.index);
 
-routes.get('/orders/:id/problems', DeliveryProblemsController.index);
+routes.get('/ordersproblems', DeliveryProblemsController.index);
+routes.get('/orders/:id/problems', DeliveryProblemsController.show);
 routes.post('/orders/:id/problems', DeliveryProblemsController.store);
 routes.delete('/orders/:id/cancel-delivery', DeliveryProblemsController.delete);
 
@@ -44,6 +45,8 @@ routes.delete('/orders/:id/cancel-delivery', DeliveryProblemsController.delete);
 routes.use(authAdminMiddleware);
 routes.get('/recipients', RecipientController.index);
 routes.post('/recipients', RecipientController.store);
+routes.put('/recipients/:id', RecipientController.update);
+routes.delete('/recipients/:id', RecipientController.delete);
 
 routes.get('/couriers', CourierController.index);
 routes.post('/couriers', CourierController.store);
