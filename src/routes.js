@@ -23,18 +23,18 @@ const upload = multer(multerConfig);
 routes.post('/users', UserController.store);
 routes.post('/sessions', SessionController.store);
 
-// Authenticated routes
-routes.use(authMiddleware);
-
-routes.put('/users', UserController.update);
-
+routes.get('/couriers/:id', CourierController.show);
+routes.get('/couriers/:id/deliveredorders', DeliveredOrdersController.index);
 routes.get('/couriers/:id/activeorders', ActiveOrdersController.index);
 routes.put(
   '/couriers/:courierId/activeorders/:orderId',
   ActiveOrdersController.update
 );
 
-routes.get('/couriers/:id/deliveredorders', DeliveredOrdersController.index);
+// Authenticated routes
+routes.use(authMiddleware);
+
+routes.put('/users', UserController.update);
 
 routes.get('/ordersproblems', DeliveryProblemsController.index);
 routes.get('/orders/:id/problems', DeliveryProblemsController.show);

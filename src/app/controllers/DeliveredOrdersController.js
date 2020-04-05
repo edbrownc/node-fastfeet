@@ -17,7 +17,7 @@ class DeliveredOrdersController {
         },
       },
       order: ['start_date'],
-      attributes: ['id', 'product', 'start_date', 'end_date'],
+      attributes: ['id', 'product', 'start_date', 'end_date', 'created_at'],
       limit: 20,
       offset: (page - 1) * 20,
       include: [

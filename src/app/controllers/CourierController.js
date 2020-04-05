@@ -94,6 +94,20 @@ class CourierController {
 
     return res.json({ message: 'Courier deleted successfuly.' });
   }
+
+  async show(req, res) {
+    const courier = await Courier.findByPk(req.params.id, {
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['name', 'path', 'url'],
+        },
+      ],
+    });
+
+    return res.json(courier);
+  }
 }
 
 export default new CourierController();
