@@ -31,15 +31,15 @@ routes.put(
   ActiveOrdersController.update
 );
 
-// Authenticated routes
-routes.use(authMiddleware);
-
-routes.put('/users', UserController.update);
-
-routes.get('/ordersproblems', DeliveryProblemsController.index);
 routes.get('/orders/:id/problems', DeliveryProblemsController.show);
 routes.post('/orders/:id/problems', DeliveryProblemsController.store);
 routes.delete('/orders/:id/cancel-delivery', DeliveryProblemsController.delete);
+
+// Authenticated routes
+routes.use(authMiddleware);
+
+routes.get('/ordersproblems', DeliveryProblemsController.index);
+routes.put('/users', UserController.update);
 
 // Admin authenticated routes
 routes.use(authAdminMiddleware);
