@@ -1,24 +1,20 @@
 import * as Yup from 'yup';
-import DeliveryProblem from '../schemas/DeliveryProblem';
+import DeliveryIssue from '../models/DeliveryIssue';
 import Order from '../models/Order';
 import Recipient from '../models/Recipient';
 import Courier from '../models/Courier';
 import CancellationMail from '../jobs/CancellationMail';
 import Queue from '../../lib/Queue';
 
-class DeliveryProblemsController {
-  async index(req, res) {
-    const problem = await DeliveryProblem.find();
-
-    return res.json(problem);
-  }
-
+class DeliveryIssuesController {
   async show(req, res) {
-    const order = await DeliveryProblem.find({
-      orderId: req.params.id,
+    const issues = await DeliveryIssue.findAll({
+      where: {
+        order_id: req.params.id,
+      },
     });
 
-    return res.json(order);
+    return res.json(issues);
   }
 
   async store(req, res) {
@@ -31,18 +27,18 @@ class DeliveryProblemsController {
     }
 
     const { description } = req.body;
-    const orderId = req.params.id;
+    const order_id = req.params.id;
 
-    await DeliveryProblem.create({
-      orderId,
+    const issue = await DeliveryIssue.create({
+      order_id,
       description,
     });
 
-    return res.json({ orderId, description });
+    return res.json({ issue });
   }
 
   async delete(req, res) {
-    const { description } = await DeliveryProblem.findOne({
+    const { description } = await DeliveryIssue.findOne({
       orderId: req.params.id,
     });
 
@@ -79,4 +75,4 @@ class DeliveryProblemsController {
   }
 }
 
-export default new DeliveryProblemsController();
+export default new DeliveryIssuesController();

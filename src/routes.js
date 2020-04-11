@@ -11,7 +11,7 @@ import CourierController from './app/controllers/CourierController';
 import OrderController from './app/controllers/OrderController';
 import ActiveOrdersController from './app/controllers/ActiveOrdersController';
 import DeliveredOrdersController from './app/controllers/DeliveredOrdersController';
-import DeliveryProblemsController from './app/controllers/DeliveryProblemsController';
+import DeliveryIssuesController from './app/controllers/DeliveryIssuesController';
 
 import authMiddleware from './app/middlewares/auth';
 import authAdminMiddleware from './app/middlewares/authAdmin';
@@ -31,14 +31,13 @@ routes.put(
   ActiveOrdersController.update
 );
 
-routes.get('/orders/:id/problems', DeliveryProblemsController.show);
-routes.post('/orders/:id/problems', DeliveryProblemsController.store);
-routes.delete('/orders/:id/cancel-delivery', DeliveryProblemsController.delete);
+routes.get('/orders/:id/issues', DeliveryIssuesController.show);
+routes.post('/orders/:id/issues', DeliveryIssuesController.store);
+routes.delete('/orders/:id/cancel-delivery', DeliveryIssuesController.delete);
 
 // Authenticated routes
 routes.use(authMiddleware);
 
-routes.get('/ordersproblems', DeliveryProblemsController.index);
 routes.put('/users', UserController.update);
 
 // Admin authenticated routes
