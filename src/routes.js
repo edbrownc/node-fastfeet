@@ -35,6 +35,8 @@ routes.get('/orders/:id/issues', DeliveryIssuesController.show);
 routes.post('/orders/:id/issues', DeliveryIssuesController.store);
 routes.delete('/orders/:id/cancel-delivery', DeliveryIssuesController.delete);
 
+routes.post('/files', upload.single('file'), FileController.store);
+
 // Authenticated routes
 routes.use(authMiddleware);
 
@@ -56,7 +58,5 @@ routes.get('/orders', OrderController.index);
 routes.post('/orders', OrderController.store);
 routes.put('/orders/:id', OrderController.update);
 routes.delete('/orders/:id', OrderController.delete);
-
-routes.post('/files', upload.single('file'), FileController.store);
 
 export default routes;
