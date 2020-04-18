@@ -1,12 +1,28 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 import DeliveryIssue from '../models/DeliveryIssue';
 import Order from '../models/Order';
-import Recipient from '../models/Recipient';
-import Courier from '../models/Courier';
 import CancellationMail from '../jobs/CancellationMail';
 import Queue from '../../lib/Queue';
 
 class DeliveryIssuesController {
+  async index(req, res) {
+    const issues = await DeliveryIssue.findAll({
+      include: [
+        {
+          model: Order,
+          as: 'order',
+          where: {
+            canceled_at: { [Op.is]: null },
+            end_date: { [Op.is]: null },
+          },
+        },
+      ],
+    });
+
+    return res.json(issues);
+  }
+
   async show(req, res) {
     const issues = await DeliveryIssue.findAll({
       where: {
@@ -38,38 +54,16 @@ class DeliveryIssuesController {
   }
 
   async delete(req, res) {
-    const { description } = await DeliveryIssue.findOne({
-      orderId: req.params.id,
-    });
-
-    const order = await Order.findByPk(req.params.id, {
-      include: [
-        {
-          model: Recipient,
-          as: 'recipient',
-          attributes: [
-            'name',
-            'street',
-            'number',
-            'complement',
-            'state',
-            'city',
-            'zip',
-          ],
-        },
-        {
-          model: Courier,
-          as: 'courier',
-          attributes: ['name', 'email'],
-        },
-      ],
-    });
+    const order = await Order.findByPk(req.params.id);
 
     order.canceled_at = new Date();
 
     await order.save();
 
-    await Queue.add(CancellationMail.key, { order, description });
+    await Queue.add(CancellationMail.key, {
+      order,
+      description: 'Too many attempts to deliver',
+    });
 
     return res.json(order);
   }

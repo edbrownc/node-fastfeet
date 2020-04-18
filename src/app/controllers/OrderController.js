@@ -14,11 +14,17 @@ class OrderController {
 
     const orders = await Order.findAll({
       where: {
-        canceled_at: null,
         product: product ? { [Op.iLike]: `%${product}%` } : { [Op.like]: '%' },
       },
       order: ['id'],
-      attributes: ['id', 'product', 'start_date', 'end_date', 'status'],
+      attributes: [
+        'id',
+        'product',
+        'start_date',
+        'end_date',
+        'canceled_at',
+        'status',
+      ],
       limit: 20,
       offset: (page - 1) * 20,
       include: [

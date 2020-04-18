@@ -4,9 +4,8 @@ class DeliveryIssue extends Model {
   static init(sequelize) {
     super.init(
       {
-        order_id: Sequelize.STRING,
-        start_date: Sequelize.DATE,
-        end_date: Sequelize.DATE,
+        order_id: Sequelize.INTEGER,
+        description: Sequelize.STRING,
       },
       { sequelize }
     );

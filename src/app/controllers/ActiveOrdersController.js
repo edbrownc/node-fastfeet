@@ -74,6 +74,8 @@ class ActiveOrdersController {
       signature_id,
     } = req.body;
 
+    const { courierId, orderId } = req.params;
+
     if (start_date_req) {
       if (isWithinBusinessHours(start_date_req)) {
         return res
@@ -88,6 +90,7 @@ class ActiveOrdersController {
           start_date: {
             [Op.between]: [startOfDay(currentDate), endOfDay(currentDate)],
           },
+          courier_id: courierId,
         },
       });
 
@@ -97,8 +100,6 @@ class ActiveOrdersController {
           .json({ error: 'More than 5 deliveries per day is not allowed.' });
       }
     }
-
-    const { courierId, orderId } = req.params;
 
     const order = await Order.findByPk(orderId);
 

@@ -19,7 +19,7 @@ class Order extends Model {
               return 'Delivered';
             }
 
-            if (this.get('end_date')) {
+            if (this.get('start_date')) {
               return 'Picked up';
             }
 
